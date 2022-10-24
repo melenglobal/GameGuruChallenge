@@ -15,13 +15,11 @@ namespace Case2Folders.Scripts.Managers
         private LoadCommand _loadCommand;
 
         private SaveCommand _saveCommand;
-
-
+        
         #endregion
 
         #endregion
-
-
+        
         private void Awake()
         {
             Init();
@@ -33,6 +31,8 @@ namespace Case2Folders.Scripts.Managers
             _saveCommand = new SaveCommand();
         }
 
+        #region Event Subscriptions
+        
         private void OnEnable() => SubscribeEvents();
 
         private void SubscribeEvents()
@@ -48,6 +48,9 @@ namespace Case2Folders.Scripts.Managers
         }
         
         private void OnDisable() => UnsubscribeEvents();
+
+        #endregion
+
 
     
     }

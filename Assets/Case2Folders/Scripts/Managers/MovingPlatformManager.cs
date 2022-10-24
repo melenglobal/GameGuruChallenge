@@ -85,7 +85,6 @@ namespace Case2Folders.Scripts.Managers
                 currentPlatform = _currentMovementController;
                 lastPlatform = currentPlatform;
                 return lastPlatform;
-                
             }
             lastPlatform = currentPlatform;
             currentPlatform = _currentMovementController;

@@ -6,25 +6,26 @@ using UnityEngine;
 
 namespace Case2Folders.Scripts.Extentions
 {   
-    //This ObjectPool is created by onewheelstudio and can be found here: https://www.youtube.com/watch?v=x6jFZvvOGgk 
+    //This ObjectPool is created by OneWheelStudio and can be found here: https://www.youtube.com/watch?v=x6jFZvvOGgk
+    //I have made some changes to it to make it work with my GameGuruChallenge Case Project.
     public class ObjectPool<T> : IPool<T> where T : MonoBehaviour,IPoolable<T>
     {
         public ObjectPool(GameObject pooledObject, int numToSpawn = 0)
         {
-            this.prefab = pooledObject;
+            prefab = pooledObject;
             Spawn(numToSpawn);
         }
 
         public ObjectPool(GameObject pooledObject, Action<T> pullObject, Action<T> pushObject, int numToSpawn = 0)
         {
-            this.prefab = pooledObject;
+            prefab = pooledObject;
             this.pullObject = pullObject;
             this.pushObject = pushObject;
             Spawn(numToSpawn);
         }
 
-        private System.Action<T> pullObject;
-        private System.Action<T> pushObject;
+        private Action<T> pullObject;
+        private Action<T> pushObject;
         private Stack<T> pooledObjects = new Stack<T>();
         private GameObject prefab;
         public int pooledCount

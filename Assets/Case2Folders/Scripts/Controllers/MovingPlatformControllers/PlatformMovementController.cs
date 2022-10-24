@@ -66,16 +66,21 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
         private void CutPlatformAlongXAxis(float stoppingDistanceX,float edgeDirection)
         {
             float newXSize = LastMovementController.transform.localScale.x - Mathf.Abs(stoppingDistanceX);
-            
-            float fallingBlockSize = transform.localScale.x- newXSize;
+
+            var currentTransform = transform;
+            var localScale = currentTransform.localScale;
+            float fallingBlockSize = localScale.x- newXSize;
 
             float newZPosition = LastMovementController.transform.position.x + (stoppingDistanceX / 2);
 
-            transform.localScale = new Vector3(newXSize, transform.localScale.y, transform.localScale.z);
+            localScale = new Vector3(newXSize, localScale.y, localScale.z);
+            currentTransform.localScale = localScale;
 
-            transform.position = new Vector3(newZPosition, transform.position.y, transform.position.z);
+            var transformPosition = currentTransform.position;
+            transformPosition = new Vector3(newZPosition, transformPosition.y, transformPosition.z);
+            currentTransform.position = transformPosition;
 
-            float platformEdge = transform.position.x + (newXSize / 2f * edgeDirection);
+            float platformEdge = transformPosition.x + (newXSize / 2f * edgeDirection);
 
             float fallingBlockXPosition = platformEdge + (fallingBlockSize / 2f * edgeDirection);
             
@@ -87,11 +92,14 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
         {
             var fallingBlock = GameObject.CreatePrimitive(PrimitiveType.Cube); // Do not create cube,use pool for that
 
+            var currentTransform = transform;
+            var localScale = currentTransform.localScale;
             fallingBlock.transform.localScale = 
-                new Vector3(fallingBlockSize,transform.localScale.y,transform.localScale.z);
+                new Vector3(fallingBlockSize,localScale.y,localScale.z);
 
+            var transformPosition = currentTransform.position;
             fallingBlock.transform.position =
-                new Vector3(fallingBlockXPosition, transform.position.y, transform.position.z);
+                new Vector3(fallingBlockXPosition, transformPosition.y, transformPosition.z);
 
             fallingBlock.AddComponent<Rigidbody>(); // Do not add rigidbody,use pool for that
             // Create Pool

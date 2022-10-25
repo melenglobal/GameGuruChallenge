@@ -18,6 +18,8 @@ namespace Case2Folders.Scripts.Managers
         
         private CharacterData _characterData;
 
+        
+
         #endregion
         #region Serialized Variables
 

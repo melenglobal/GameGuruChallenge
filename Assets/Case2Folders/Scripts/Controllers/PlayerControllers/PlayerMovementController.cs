@@ -1,5 +1,6 @@
 ﻿using System;
 using Case2Folders.Scripts.Data.ValueObjects;
+using Case2Folders.Scripts.Signals;
 using UnityEngine;
 
 namespace Case2Folders.Scripts.Controllers.PlayerControllers
@@ -15,6 +16,7 @@ namespace Case2Folders.Scripts.Controllers.PlayerControllers
         private Transform playerTransform;
         
         private bool _isReadyToMove;
+        private bool _isPlayerFalling => transform.position.y < 0.45f;
 
         #endregion
         
@@ -38,6 +40,12 @@ namespace Case2Folders.Scripts.Controllers.PlayerControllers
         private void FixedUpdate()
         {
             if (!_isReadyToMove) return;
+
+            if (_isPlayerFalling)
+            {
+                CoreGameSignals.Instance.onLevelFailed?.Invoke();
+                return;
+            }
             
             Move();
             

@@ -1,6 +1,6 @@
 ﻿using System;
 using Case2Folders.Scripts.Commands;
-using Case2Folders.Scripts.Data.ValueObject;
+using Case2Folders.Scripts.Data.ValueObjects;
 using Case2Folders.Scripts.Signals;
 using UnityEngine;
 

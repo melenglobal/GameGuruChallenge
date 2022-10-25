@@ -1,5 +1,5 @@
 ﻿using System;
-using Case2Folders.Scripts.Data.ValueObject;
+using Case2Folders.Scripts.Data.ValueObjects;
 using Case2Folders.Scripts.Extentions;
 using Cinemachine;
 using UnityEngine.Events;

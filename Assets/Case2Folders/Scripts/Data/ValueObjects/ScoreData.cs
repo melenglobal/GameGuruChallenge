@@ -1,7 +1,6 @@
 ﻿using System;
-using UnityEngine;
 
-namespace Case2Folders.Scripts.Data.ValueObject
+namespace Case2Folders.Scripts.Data.ValueObjects
 {   
     [Serializable]
     public struct ScoreData

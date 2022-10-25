@@ -1,7 +1,7 @@
 ﻿using System;
 using Case2Folders.Scripts.Interfaces;
 
-namespace Case2Folders.Scripts.Data.ValueObject
+namespace Case2Folders.Scripts.Data.ValueObjects
 {   
     [Serializable]
     public class LevelData : ISaveableEntity

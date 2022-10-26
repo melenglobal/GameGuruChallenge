@@ -109,5 +109,6 @@ namespace Case2Folders.Scripts.Extentions
                 t.gameObject.SetActive(false);
             }
         }
+        
     }
 }

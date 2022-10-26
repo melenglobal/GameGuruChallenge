@@ -31,6 +31,10 @@ namespace Case2Folders.Scripts.Signals
         
         public Func<PlatformMovementController,PlatformMovementController> onCurrentPlatformChange = controller => default;
         
-        public Func<Vector3> OnGetSpawnPosition = () => default;
+        public Func<Vector3> onGetSpawnPosition = () => default;
+        
+        public UnityAction onPerfectClick = delegate {  };
+        
+        public Func<Transform,bool> onCheckCanSpawnPlatform = transform => default;
     }
 }

@@ -14,31 +14,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Data:
     Levels:
+    - PlatformCount: 2
+      PlatformZScale: 3
+      FinishObjectOffsetGap: 0
+    - PlatformCount: 3
+      PlatformZScale: 3
+      FinishObjectOffsetGap: 0
+    - PlatformCount: 4
+      PlatformZScale: 3
+      FinishObjectOffsetGap: 0
     - PlatformCount: 5
+      PlatformZScale: 3
+      FinishObjectOffsetGap: 0
+    - PlatformCount: 6
       PlatformZScale: 3
       FinishObjectOffsetGap: 0
     - PlatformCount: 7
       PlatformZScale: 3
       FinishObjectOffsetGap: 0
+    - PlatformCount: 8
+      PlatformZScale: 3
+      FinishObjectOffsetGap: 0
     - PlatformCount: 9
       PlatformZScale: 3
       FinishObjectOffsetGap: 0
-    - PlatformCount: 11
-      PlatformZScale: 3
-      FinishObjectOffsetGap: 0
-    - PlatformCount: 13
-      PlatformZScale: 3
-      FinishObjectOffsetGap: 0
-    - PlatformCount: 15
-      PlatformZScale: 3
-      FinishObjectOffsetGap: 0
-    - PlatformCount: 14
-      PlatformZScale: 3
-      FinishObjectOffsetGap: 0
     - PlatformCount: 10
-      PlatformZScale: 3
-      FinishObjectOffsetGap: 0
-    - PlatformCount: 15
       PlatformZScale: 3
       FinishObjectOffsetGap: 0
     - PlatformCount: 16

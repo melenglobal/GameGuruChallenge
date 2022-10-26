@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Case2Folders.Scripts.Controllers.MovingPlatformControllers;
 using Case2Folders.Scripts.Enums;
+using Case2Folders.Scripts.Extentions;
 using Case2Folders.Scripts.Signals;
 using DG.Tweening;
 using UnityEngine;
@@ -12,38 +13,34 @@ namespace Case2Folders.Scripts.Managers
     {
         #region Self Variables
 
+        #region Private Variables
+
+        private static ObjectPool<PoolObject> _objectPool;
+
+        private static readonly List<PoolObject> _pooledObjects = new List<PoolObject>();
+
+        private bool _CanSpawnPlatform = true;
+
+        #endregion
         #region Serialized Variables
-        
-        [SerializeField]
-        private List<PlatformMovementController> movingPlatforms;
         
         [SerializeField] 
         private GameObject movingPlatformPrefab;
-        
         [SerializeField]
         private PlatformMovementController currentPlatform;
-
         [SerializeField] 
         private PlatformMovementController lastPlatform;
-
         [SerializeField] 
         private PlatformMoveDirectionType platformMoveDirectionType;
         
-        
         #endregion
 
         #endregion
-        
-        private void Start()
-        {
-            SetSpawnPosition();
-            SpawnInitPlatform();
-        }
+
+        private void Awake() => _objectPool = new ObjectPool<PoolObject>(movingPlatformPrefab, 10);
 
         #region Event Subscriptions
-
         private void OnEnable() => SubscribeEvents();
-
         private void SubscribeEvents()
         {
             InputSignals.Instance.onPlatformStop += OnPlatformStop;
@@ -51,7 +48,6 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onNextLevel += OnNextLevel;
             CoreGameSignals.Instance.onPlay += OnStartSpawnPlatform;
         }
-
         private void UnsubscribeEvents()
         {
             InputSignals.Instance.onPlatformStop -= OnPlatformStop;
@@ -59,63 +55,72 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
             CoreGameSignals.Instance.onPlay -= OnStartSpawnPlatform;
         }
-        
         private void OnDisable() => UnsubscribeEvents();
-
+        
         #endregion
-       
-        private void SetSpawnPosition()
+        
+        private void Start()
         {
-            transform.position = CoreGameSignals.Instance.OnGetSpawnPosition.Invoke();
+            SetSpawnPosition();
+            GetInitPlatformFromPool();
         }
-
+        private void SetSpawnPosition() => transform.position = CoreGameSignals.Instance.onGetSpawnPosition.Invoke();
         private void OnNextLevel()
         {
-            transform.position = CoreGameSignals.Instance.OnGetSpawnPosition.Invoke();
+            ResetPlatforms();
+            transform.position = CoreGameSignals.Instance.onGetSpawnPosition.Invoke();
+            GetInitPlatformFromPool();
+            DOVirtual.DelayedCall(.5f, SpawnPlatform);
         }
-
         private void OnPlatformStop()
         {
-            currentPlatform.StopPlatform(); //Current Platform Stop with player input
-            SpawnPlatform(); // Spawn new platform
+            currentPlatform.StopPlatform();
+            _CanSpawnPlatform = CoreGameSignals.Instance.onCheckCanSpawnPlatform.Invoke(currentPlatform.transform);
+            if (_CanSpawnPlatform)
+            {
+                SpawnPlatform();
+            }
         }
         
         private void OnStartSpawnPlatform()
         {
             SpawnPlatform();
         }
-
-        private PlatformMovementController OnPlatformChange(PlatformMovementController _currentMovementController)
+        private PlatformMovementController OnPlatformChange(PlatformMovementController currentMovementController)
         {
             if (lastPlatform == null)
             {   
-                currentPlatform = _currentMovementController;
+                currentPlatform = currentMovementController;
                 lastPlatform = currentPlatform;
                 return lastPlatform;
             }
             lastPlatform = currentPlatform;
-            currentPlatform = _currentMovementController;
+            currentPlatform = currentMovementController;
             return lastPlatform;
         }
-        
-        private void SpawnInitPlatform()
+        private void GetInitPlatformFromPool()
         {
-            var movingPlatform = Instantiate(movingPlatformPrefab);
-            movingPlatform.transform.position = transform.position;
-            ChangeSpawnXPosition();
-            
+            GetPlatformFromPool().position = transform.position;
+            Debug.Log("GetInitPlatformFromPool");
+            ChangeSpawnPositionX();
         }
         private void SpawnPlatform()
         {
-            var movingPlatform = Instantiate(movingPlatformPrefab);
-            movingPlatform.transform.position = 
+            var platformTransform = GetPlatformFromPool();
+            platformTransform.position = 
                     new Vector3(transform.position.x, transform.position.y,
-                        lastPlatform.transform.position.z + movingPlatform.transform.localScale.z);
-            MovePlatform(movingPlatform);
-            ChangeSpawnXPosition();
+                        lastPlatform.transform.position.z + platformTransform.localScale.z);
+            MovePlatform(platformTransform.gameObject);
+            ChangeSpawnPositionX();
         }
-        
-        private void ChangeSpawnXPosition()
+
+        private Transform GetPlatformFromPool()
+        {
+            PoolObject newPlatform = _objectPool.Pull();
+            _pooledObjects.Add(newPlatform);
+            return newPlatform.transform;
+        }
+        private void ChangeSpawnPositionX()
         {
             if (transform.position == Vector3.zero || transform.position == new Vector3(6, 0, 0))
             {
@@ -129,7 +134,6 @@ namespace Case2Folders.Scripts.Managers
                 platformMoveDirectionType = PlatformMoveDirectionType.Left;
             }
         }
-
         private void MovePlatform(GameObject movingPlatform)
         {
             if (platformMoveDirectionType == PlatformMoveDirectionType.Right)
@@ -141,15 +145,27 @@ namespace Case2Folders.Scripts.Managers
                 movingPlatform.transform.DOLocalMoveX(-6, 3f).SetEase(Ease.Linear);
             }
         }
+        private void OnReset()
+        {   
+            ResetPlatforms();
+            transform.position = CoreGameSignals.Instance.onGetSpawnPosition.Invoke();
+            GetInitPlatformFromPool();
+            DOVirtual.DelayedCall(.5f, SpawnPlatform);
+        }
+        private void ResetPlatforms()
+        {
+            foreach (var pooledObject in _pooledObjects)
+            {
+                pooledObject.gameObject.SetActive(false);
+            }
+            _pooledObjects.Clear();
+        }
         private void OnEnableInput() => InputSignals.Instance.onEnableInput?.Invoke();
-        
         private void OnDisableInput() =>  InputSignals.Instance.onDisableInput?.Invoke();
-        
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.green;
             Gizmos.DrawWireCube(transform.position,movingPlatformPrefab.transform.localScale);
         }
-
     }
 }

@@ -10,7 +10,6 @@ namespace Case2Folders.Scripts.Controllers.PlayerControllers
         {
             if (!other.CompareTag("Finish")) return;
             
-            Debug.Log("Finish");
             CoreGameSignals.Instance.onLevelSuccessful?.Invoke();
 
         }

@@ -1,5 +1,4 @@
-﻿using System;
-using Case2Folders.Scripts.Enums;
+﻿using Case2Folders.Scripts.Enums;
 using Case2Folders.Scripts.Signals;
 using DG.Tweening;
 using UnityEngine;
@@ -13,6 +12,9 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
 
         [SerializeField] 
         private Material material;
+
+        [SerializeField] 
+        private GameObject fallingBlock;
 
         public PlatformMovementController CurrentMovementController;
         

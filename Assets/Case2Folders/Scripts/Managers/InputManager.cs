@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Case2Folders.Scripts.Signals;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,17 +8,25 @@ namespace Case2Folders.Scripts.Managers
     public class InputManager : MonoBehaviour
     {
         #region Self Variables
-        
+
+        #region Serialized Variables
+
         [SerializeField] 
         private bool isReadyForTouch;
 
-        private bool _hasTouched;
-
         #endregion
         
+        #region Private Variables
+        
+        private bool _hasTouched;
+        
+        #endregion
+        
+        #endregion
 
+        #region Event Subscriptions
+        
         private void OnEnable() => SubscribeEvents();
-
         private void SubscribeEvents()
         {
             InputSignals.Instance.onEnableInput += OnEnableInput;
@@ -33,9 +40,10 @@ namespace Case2Folders.Scripts.Managers
             InputSignals.Instance.onEnableInput -= OnEnableInput;
             InputSignals.Instance.onDisableInput -= OnDisableInput;
         }
-        
         private void OnDisable() => UnsubscribeEvents();
-
+        
+        #endregion
+        
         private void Update()
         {
             if (!isReadyForTouch) return;
@@ -51,9 +59,7 @@ namespace Case2Folders.Scripts.Managers
         }
 
         private void OnEnableInput() =>  isReadyForTouch = true;
-
         private void OnDisableInput() => isReadyForTouch = false;
-        
         private bool IsPointerOverUIElement()
         {
             var eventData = new PointerEventData(EventSystem.current);

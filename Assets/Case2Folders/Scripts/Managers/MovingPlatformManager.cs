@@ -29,19 +29,15 @@ namespace Case2Folders.Scripts.Managers
         [SerializeField] 
         private PlatformMoveDirectionType platformMoveDirectionType;
         
-        // En sonda bir bitis cizgisi var
-        // levelden yonetilmeli
-        // o pozisyona ulasinca,
-        // bizim spawnerimizi o pozisyonun Vector3.forwardina koymamiz
         
         #endregion
 
         #endregion
-
+        
         private void Start()
-        {   
+        {
+            SetSpawnPosition();
             SpawnInitPlatform();
-            
         }
 
         #region Event Subscriptions
@@ -51,14 +47,16 @@ namespace Case2Folders.Scripts.Managers
         private void SubscribeEvents()
         {
             InputSignals.Instance.onPlatformStop += OnPlatformStop;
-            CoreGameSignals.Instance.onCurrentPlatformChange += OnPlatformChange; 
+            CoreGameSignals.Instance.onCurrentPlatformChange += OnPlatformChange;
+            CoreGameSignals.Instance.onNextLevel += OnNextLevel;
             CoreGameSignals.Instance.onPlay += OnStartSpawnPlatform;
         }
-        
+
         private void UnsubscribeEvents()
         {
             InputSignals.Instance.onPlatformStop -= OnPlatformStop;
             CoreGameSignals.Instance.onCurrentPlatformChange -= OnPlatformChange;
+            CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
             CoreGameSignals.Instance.onPlay -= OnStartSpawnPlatform;
         }
         
@@ -66,6 +64,15 @@ namespace Case2Folders.Scripts.Managers
 
         #endregion
        
+        private void SetSpawnPosition()
+        {
+            transform.position = CoreGameSignals.Instance.OnGetSpawnPosition.Invoke();
+        }
+
+        private void OnNextLevel()
+        {
+            transform.position = CoreGameSignals.Instance.OnGetSpawnPosition.Invoke();
+        }
 
         private void OnPlatformStop()
         {

@@ -37,6 +37,7 @@ namespace Case2Folders.Scripts.Managers
             UISignals.Instance.onClosePanel += OnClosePanel;
             CoreGameSignals.Instance.onPlay += OnPlay;
             CoreGameSignals.Instance.onNextLevel += OnNextLevel;
+            CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccess;
             CoreGameSignals.Instance.onResetLevel += OnResetLevel;
             CoreGameSignals.Instance.onLevelFailed += OnLevelFailed;
         }
@@ -45,6 +46,7 @@ namespace Case2Folders.Scripts.Managers
             UISignals.Instance.onOpenPanel -= OnOpenPanel;
             UISignals.Instance.onClosePanel -= OnClosePanel;
             CoreGameSignals.Instance.onPlay -= OnPlay;
+            CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccess;
             CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
             CoreGameSignals.Instance.onResetLevel -= OnResetLevel;
             CoreGameSignals.Instance.onLevelFailed -= OnLevelFailed;
@@ -68,6 +70,12 @@ namespace Case2Folders.Scripts.Managers
         {
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.WinPanel);
             UISignals.Instance.onOpenPanel?.Invoke(UIPanels.LevelPanel);
+        }
+        
+        private void OnLevelSuccess()
+        {
+            UISignals.Instance.onClosePanel?.Invoke(UIPanels.LevelPanel);
+            UISignals.Instance.onOpenPanel?.Invoke(UIPanels.WinPanel);
         }
         
         private void OnLevelFailed()

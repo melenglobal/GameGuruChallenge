@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Case2Folders.Scripts.Interfaces;
 
 namespace Case2Folders.Scripts.Data.ValueObjects
@@ -6,19 +7,21 @@ namespace Case2Folders.Scripts.Data.ValueObjects
     [Serializable]
     public class LevelData : ISaveableEntity
     {
-        public int PlatformCount;
         
+        public List<LevelObjectData> Levels = new List<LevelObjectData>();
+
         private const string LEVEL_DATA_KEY = "LevelData";
         
         public LevelData()
         {
             
         }
-        
-        public LevelData(int platformCount)
+
+        public LevelData(List<LevelObjectData> levels)
         {
-            PlatformCount = platformCount;
+            Levels = levels;
         }
+ 
 
         public string GetKey()
         {

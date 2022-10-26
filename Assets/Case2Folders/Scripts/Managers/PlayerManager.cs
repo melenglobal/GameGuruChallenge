@@ -17,9 +17,7 @@ namespace Case2Folders.Scripts.Managers
         private PlayerAnimationCommand _playerAnimationCommand;
         
         private CharacterData _characterData;
-
         
-
         #endregion
         #region Serialized Variables
 
@@ -60,6 +58,7 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onLevelFailed += OnLevelFailed;
             CoreGameSignals.Instance.onResetLevel += OnResetLevel;
             CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccessful;
+            CoreGameSignals.Instance.onNextLevel += OnNextLevel;
         }
         
         private void UnsubscribeEvents()
@@ -68,6 +67,7 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onLevelFailed -= OnLevelFailed;
             CoreGameSignals.Instance.onResetLevel -= OnResetLevel;
             CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccessful;
+            CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
         }
         private void OnDisable() => UnsubscribeEvents();
 
@@ -77,7 +77,7 @@ namespace Case2Folders.Scripts.Managers
         private void OnLevelFailed() => ChangePlayerBehaviour(false, PlayerAnimationType.Fall);
         private void OnResetLevel() => ChangePlayerBehaviour(false, PlayerAnimationType.Idle);
         private void OnLevelSuccessful() => ChangePlayerBehaviour(false, PlayerAnimationType.Dance);
-
+        private void OnNextLevel() => ChangePlayerBehaviour(true, PlayerAnimationType.Run);
         private void ChangePlayerBehaviour(bool isReadyToMove, PlayerAnimationType playerAnimationType)
         {
             _playerAnimationCommand.ChangeAnimationState(playerAnimationType);

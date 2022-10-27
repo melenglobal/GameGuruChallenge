@@ -28,21 +28,12 @@ namespace Case2Folders.Scripts.Extentions
         private Action<T> pushObject;
         private Stack<T> pooledObjects = new Stack<T>();
         private GameObject prefab;
-        public int pooledCount
-        {
-            get
-            {
-                return pooledObjects.Count;
-            }
-        }
+        private int PooledCount => pooledObjects.Count;
 
         public T Pull()
         {
             T t;
-            if (pooledCount > 0)
-                t = pooledObjects.Pop();
-            else
-                t = GameObject.Instantiate(prefab).GetComponent<T>();
+            t = PooledCount > 0 ? pooledObjects.Pop() : GameObject.Instantiate(prefab).GetComponent<T>();
 
             t.gameObject.SetActive(true); //ensure the object is on
             t.Initialize(Push);

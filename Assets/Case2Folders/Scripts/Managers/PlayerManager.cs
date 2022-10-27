@@ -61,7 +61,8 @@ namespace Case2Folders.Scripts.Managers
         private void OnEnable() => SubscribeEvents();
 
         private void SubscribeEvents()
-        {
+        {   
+            CoreGameSignals.Instance.onLevelReady += OnReturnBase;
             CoreGameSignals.Instance.onPlay += OnPlay;
             CoreGameSignals.Instance.onLevelFailed += OnLevelFailed;
             CoreGameSignals.Instance.onResetLevel += OnResetLevel;
@@ -69,10 +70,12 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccessful;
             CoreGameSignals.Instance.onNextLevel += OnNextLevel;
             CoreGameSignals.Instance.onPlatformStop += OnPlatformStop;
+            
         }
         
         private void UnsubscribeEvents()
-        {
+        {   
+            CoreGameSignals.Instance.onLevelReady += OnReturnBase;
             CoreGameSignals.Instance.onPlay -= OnPlay;
             CoreGameSignals.Instance.onLevelFailed -= OnLevelFailed;
             CoreGameSignals.Instance.onResetLevel -= OnResetLevel;
@@ -81,6 +84,7 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
             CoreGameSignals.Instance.onPlatformStop -= OnPlatformStop;
         }
+        
 
         private void OnDisable() => UnsubscribeEvents();
 
@@ -97,7 +101,11 @@ namespace Case2Folders.Scripts.Managers
             playerMovementController.ReadyToMove(isReadyToMove);
         }
         private void OnPlatformStop(Transform lastPlatform) => playerMovementController.SetLastPlatformTransform(lastPlatform);
-        private void OnReturnBase() =>
+
+        private void OnReturnBase()
+        {
             transform.position = CoreGameSignals.Instance.onGetCurrentPlatformPosition.Invoke();
+        }
+            
     }
 }

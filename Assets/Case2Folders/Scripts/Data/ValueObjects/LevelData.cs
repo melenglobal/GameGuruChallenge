@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Case2Folders.Scripts.Interfaces;
+using UnityEngine;
 
 namespace Case2Folders.Scripts.Data.ValueObjects
 {   
@@ -9,6 +10,9 @@ namespace Case2Folders.Scripts.Data.ValueObjects
     {
         
         public List<LevelObjectData> Levels = new List<LevelObjectData>();
+        
+        public int LevelID;
+        
 
         private const string LEVEL_DATA_KEY = "LevelData";
         
@@ -17,11 +21,11 @@ namespace Case2Folders.Scripts.Data.ValueObjects
             
         }
 
-        public LevelData(List<LevelObjectData> levels)
+        public LevelData(int levelID)
         {
-            Levels = levels;
+            LevelID = levelID;
         }
- 
+
 
         public string GetKey()
         {

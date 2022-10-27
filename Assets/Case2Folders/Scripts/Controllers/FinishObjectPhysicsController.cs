@@ -1,4 +1,6 @@
 ﻿using System;
+using Case2Folders.Scripts.Controllers.PlayerControllers;
+using Case2Folders.Scripts.Signals;
 using UnityEngine;
 
 namespace Case2Folders.Scripts.Controllers

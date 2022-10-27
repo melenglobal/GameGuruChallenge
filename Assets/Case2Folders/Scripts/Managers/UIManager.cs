@@ -37,6 +37,8 @@ namespace Case2Folders.Scripts.Managers
             UISignals.Instance.onOpenPanel += OnOpenPanel;
             UISignals.Instance.onClosePanel += OnClosePanel;
             UISignals.Instance.onSetLevelText += OnSetLevelText;
+            UISignals.Instance.onUpdateDiamondScore -= OnUpdateDiamondScore;
+            UISignals.Instance.onUpdateCoinScore -= OnUpdateCoinScore;
             CoreGameSignals.Instance.onPlay += OnPlay;
             CoreGameSignals.Instance.onNextLevel += OnNextLevel;
             CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccess;
@@ -48,6 +50,8 @@ namespace Case2Folders.Scripts.Managers
             UISignals.Instance.onOpenPanel -= OnOpenPanel;
             UISignals.Instance.onClosePanel -= OnClosePanel;
             UISignals.Instance.onSetLevelText -= OnSetLevelText;
+            UISignals.Instance.onUpdateDiamondScore -= OnUpdateDiamondScore;
+            UISignals.Instance.onUpdateCoinScore -= OnUpdateCoinScore;
             CoreGameSignals.Instance.onPlay -= OnPlay;
             CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccess;
             CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
@@ -59,8 +63,12 @@ namespace Case2Folders.Scripts.Managers
 
         public void Play() => DOVirtual.DelayedCall(0.025f,()=>CoreGameSignals.Instance.onPlay?.Invoke());
 
-        public void NextLevel() => CoreGameSignals.Instance.onNextLevel?.Invoke();
-        
+        public void NextLevel()
+        {   
+           // CoreGameSignals.Instance.onLevelInitialize?.Invoke();
+            CoreGameSignals.Instance.onNextLevel?.Invoke();
+        }
+
         public void Reset() => CoreGameSignals.Instance.onResetLevel?.Invoke();
 
         private void OnPlay()

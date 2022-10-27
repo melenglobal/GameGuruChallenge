@@ -24,7 +24,6 @@ namespace Case2Folders.Scripts.Extentions
             //invoke and return this object to pool
             returnToPool?.Invoke(this);
         }
-
         private void OnBecameInvisible()
         {
             ReturnToPool();

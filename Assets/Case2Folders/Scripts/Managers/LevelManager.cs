@@ -24,6 +24,8 @@ namespace Case2Folders.Scripts.Managers
         private float _FinishLinePositionZ = 0f;
         private float _offsetZ = 0f;
 
+        private int _uniqueID = 99;
+
         #endregion
         
         #region Serialized Variables
@@ -37,15 +39,17 @@ namespace Case2Folders.Scripts.Managers
         private Vector3 nextFinishLinePosition;
         [SerializeField] 
         private Vector3 currentFinishLinePosition;
+        [SerializeField]
+        private Vector3 spawnPosition;
 
         #endregion
         
         #endregion
 
         private void Awake()
-        {
-            _levelID = GetActiveLevel();
-            _levelData = GetLevelData();
+        {   
+            SyncData();
+            GetData();
             Init();
         }
         private void Init()
@@ -53,11 +57,27 @@ namespace Case2Folders.Scripts.Managers
             _levelLoaderCommand = new LevelLoaderCommand(ref levelHolder);
             _levelClearerCommand = new LevelClearerCommand(ref levelHolder);
         }
-        private int GetActiveLevel()
+
+        private void SyncData()
         {
-            if (!ES3.FileExists()) return 0;
-            return ES3.KeyExists("Level") ? ES3.Load<int>("Level") : 0;
+            _levelData = GetLevelData();
+            _levelID = _levelData.LevelID;
         }
+        private void GetData()
+        {   
+            if (!ES3.FileExists($"LevelData{_uniqueID}.es3"))
+            {
+                if (!ES3.KeyExists($"LevelData{_uniqueID}"))
+                {
+                    SyncData();
+                    Save(_uniqueID);
+                }
+            }
+            Load(_uniqueID);
+
+            _levelData = GetLevelData();
+        }
+        
         private LevelData GetLevelData() => Resources.Load<CD_Level>(_levelPath).Data;
 
         #region Event Subscriptions
@@ -69,6 +89,7 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onLevelInitialize += OnInitializeLevel;
             CoreGameSignals.Instance.onClearActiveLevel += OnClearActiveLevel;
             CoreGameSignals.Instance.onNextLevel += OnNextLevel;
+            CoreGameSignals.Instance.onPlay += OnPlay;
             CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccess;
             CoreGameSignals.Instance.onGetSpawnPosition += OnSetLevelPlatformSpawnPosition;
             CoreGameSignals.Instance.onCheckCanSpawnPlatform += OnPlatformCanSpawn;
@@ -79,6 +100,7 @@ namespace Case2Folders.Scripts.Managers
         {
             CoreGameSignals.Instance.onLevelInitialize -= OnInitializeLevel;
             CoreGameSignals.Instance.onClearActiveLevel -= OnClearActiveLevel;
+            CoreGameSignals.Instance.onPlay -= OnPlay;
             CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
             CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccess;
             CoreGameSignals.Instance.onGetSpawnPosition -= OnSetLevelPlatformSpawnPosition;
@@ -90,23 +112,40 @@ namespace Case2Folders.Scripts.Managers
         
         #endregion
 
-        private void Start() => OnInitializeLevel();
+        private void Start()
+        {
+            CoreGameSignals.Instance.onLevelInitialize?.Invoke();
+        } 
 
         private void OnNextLevel()
         {
             _levelID++;
+            Save(_uniqueID);
             UISignals.Instance.onSetLevelText?.Invoke(_levelID +1);
             var obj = Instantiate(finishLineObject,CalculateFinishLineObjectPosition(_levelID),Quaternion.identity);
+        }
+
+        private void OnPlay()
+        {
+            if (_levelID!=0)
+            {
+                var obj = Instantiate(finishLineObject,CalculateFinishLineObjectPosition(_levelID),Quaternion.identity);
+            }
+            
         }
         
         private void OnLevelSuccess() => currentFinishLinePosition = nextFinishLinePosition;
         
         private bool OnPlatformCanSpawn(Transform lastPlatform) => lastPlatform.position.z < _FinishLinePositionZ - _levelData.Levels[_levelID].PlatformZScale;
         
-        private Vector3 OnSetCurrentPlatformPosition()
+        private Vector3 OnSetCurrentPlatformPosition() 
         {
-            if (_levelID == 0) return new Vector3(0,.5f,-1.3f);;
+            if (_levelID == 0) return new Vector3(0,.5f,-1.3f);
             
+            Debug.Log(_levelID);
+            Debug.Log(currentFinishLinePosition);
+            Debug.Log(nextFinishLinePosition);
+            Debug.Log(spawnPosition);
             return currentFinishLinePosition;
         }
 
@@ -117,7 +156,7 @@ namespace Case2Folders.Scripts.Managers
                 return Vector3.zero;
             }
             _spawnPositionOffsetZ = currentFinishLinePosition.z + _levelData.Levels[_levelID].PlatformZScale - _finishLineOffsetGap;
-            var spawnPosition = new Vector3(0,0,_spawnPositionOffsetZ);
+            spawnPosition = new Vector3(0,0,_spawnPositionOffsetZ);
             return spawnPosition;
         }
         private Vector3 CalculateFinishLineObjectPosition(int levelID)
@@ -138,27 +177,46 @@ namespace Case2Folders.Scripts.Managers
             nextFinishLinePosition = new Vector3(nextFinishLinePosition.x,nextFinishLinePosition.y,_FinishLinePositionZ);
             return nextFinishLinePosition;
         }
+        
+        private void InitializeFinishLineObject()
+        {
+            var obj = Instantiate(finishLineObject,CalculateFinishLineObjectPosition(_levelID),Quaternion.identity);
+            currentFinishLinePosition = obj.transform.position;
+        }
+
         private void OnInitializeLevel()
         { 
           var newLevelData = _levelID % Resources.Load<CD_Level>(_levelPath).Data.Levels.Count; 
           _levelLoaderCommand.Execute(newLevelData);
-          var obj=  Instantiate(finishLineObject,CalculateFinishLineObjectPosition(_levelID),Quaternion.identity);
-          currentFinishLinePosition = obj.transform.position;
+          InitializeFinishLineObject();
           UISignals.Instance.onSetLevelText?.Invoke(_levelID + 1);
           CoreGameSignals.Instance.onSetCameraTarget?.Invoke();
+          CoreGameSignals.Instance.onLevelReady?.Invoke();
         }
         private void OnClearActiveLevel() => _levelClearerCommand.Execute();
-        public void Save(int uniqueId) => SaveLoadSignals.Instance.onSaveData?.Invoke(_levelData,_levelID);
-        public void Load(int uniqueId) => SaveLoadSignals.Instance.onLoadData?.Invoke(_levelData.GetKey(),_levelID);
+
+        public void Save(int uniqueId)
+        {
+            LevelData levelData = new LevelData(_levelID);
+            SaveLoadSignals.Instance.onSaveData?.Invoke(levelData,uniqueId);
+        }
+
+        public void Load(int uniqueId)
+        {
+            LevelData levelData = SaveLoadSignals.Instance.onLoadData?.Invoke(_levelData.GetKey(),uniqueId);
+
+            _levelID = levelData.LevelID;
+            
+        }
 
         private void OnApplicationPause(bool pauseStatus)
         {
-            Save(_levelID);
+            Save(_uniqueID);
         }
 
         private void OnApplicationQuit()
         {
-            Save(_levelID);
+            Save(_uniqueID);
         }
     }
 }

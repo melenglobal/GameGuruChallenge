@@ -15,12 +15,12 @@ namespace Case2Folders.Scripts.Controllers.PlayerControllers
 
         private Transform playerTransform;
 
-        private bool _isReadyToMove;
+        public bool _isReadyToMove;
 
         private bool _isBegginToWalkPlatform;
 
         private bool _isRotateToPlatform;
-        private bool _isPlayerFalling => transform.position.y < 0.45f;
+        private bool _isPlayerFalling => transform.position.y < 0f;
         
         private float _currentXAxisValue;
 

@@ -64,8 +64,7 @@ namespace Case2Folders.Scripts.Managers
         private void OnDisable() =>  UnsubscribeEvents();
         
         private void OnSetCameraTarget()
-        {   
-            Debug.Log("OnSetCameraTarget");
+        {
             stateDrivenCamera.LookAt = null;
             stateDrivenCamera.Follow = _playerTransform;
             ChangeCamera(CameraTypes.Level);
@@ -113,7 +112,6 @@ namespace Case2Folders.Scripts.Managers
         }
 
         private void ChangeCamera(CameraTypes cameraType) => cameraAnimator.Play(cameraType.ToString());
-
-
+        
     }
 }

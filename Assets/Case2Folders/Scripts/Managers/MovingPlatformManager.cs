@@ -15,13 +15,13 @@ namespace Case2Folders.Scripts.Managers
 
         #region Private Variables
 
-        private static ObjectPool<PoolObject> _platformObjectPool;
+        private ObjectPool<PoolObject> _platformObjectPool;
         
-        private static ObjectPool<PoolObject> _fallingBlockObjectPool;
+        private ObjectPool<PoolObject> _fallingBlockObjectPool;
 
-        private static readonly List<PoolObject> _pooledObjects = new List<PoolObject>();
+        private readonly List<PoolObject> _pooledObjects = new List<PoolObject>();
 
-        private bool _CanSpawnPlatform = true;
+        private bool _canSpawnPlatform = true;
 
         #endregion
         #region Serialized Variables
@@ -88,8 +88,8 @@ namespace Case2Folders.Scripts.Managers
         {
             if (!currentPlatform.CanCut) return;
             currentPlatform.StopPlatform();
-            _CanSpawnPlatform = CoreGameSignals.Instance.onCheckCanSpawnPlatform.Invoke(currentPlatform.transform);
-            if (_CanSpawnPlatform)
+            _canSpawnPlatform = CoreGameSignals.Instance.onCheckCanSpawnPlatform.Invoke(currentPlatform.transform);
+            if (_canSpawnPlatform)
             {
                 SpawnPlatform();
             }
@@ -165,13 +165,12 @@ namespace Case2Folders.Scripts.Managers
         }
         private void OnReset()
         {
-            _CanSpawnPlatform = false;
+            _canSpawnPlatform = false;
             ResetPlatforms();
             currentPlatform = null;
             lastPlatform = null;
             transform.position = CoreGameSignals.Instance.onGetSpawnPosition.Invoke();
             GetInitPlatformFromPool();
-            //DOVirtual.DelayedCall(.5f, SpawnPlatform);
         }
         private void ResetPlatforms()
         {   

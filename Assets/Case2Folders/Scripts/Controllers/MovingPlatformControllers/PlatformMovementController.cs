@@ -23,6 +23,9 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
         private Color _materialColor;
         private float _moveSpeed = 2f;
 
+        public bool CanCut => _canCut;
+        private bool _canCut;
+
         #endregion
 
         #region Serialized Variables
@@ -37,8 +40,10 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
         #endregion
         
         private void OnEnable()
-        {
+        {   
+            _canCut = true;
            SetMovementController();
+           
         }
 
         private void SetMovementController()
@@ -63,6 +68,8 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
         
         public void StopPlatform(GameObject fallingBlock)
         {
+            if (!_canCut) return;
+            _canCut = false;
             _moveSpeed = 0;
             DOTween.KillAll();
             float stoppingDistanceX = transform.position.x - LastMovementController.transform.position.x;
@@ -73,7 +80,8 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
                 CurrentMovementController = null; 
             }
             float edgeDirection = stoppingDistanceX > 0 ? 1f : -1f;
-            CutPlatformAlongXAxis(fallingBlock,stoppingDistanceX,edgeDirection);                                                      
+            CutPlatformAlongXAxis(fallingBlock,stoppingDistanceX,edgeDirection);
+
         }
         
 

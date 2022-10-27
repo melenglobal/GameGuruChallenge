@@ -32,13 +32,21 @@ namespace Case2Folders.Scripts.Managers
             InputSignals.Instance.onEnableInput += OnEnableInput;
             InputSignals.Instance.onDisableInput += OnDisableInput;
             CoreGameSignals.Instance.onPlay += OnEnableInput;
+            CoreGameSignals.Instance.onNextLevel += OnEnableInput;
+            CoreGameSignals.Instance.onLevelFailed += OnDisableInput;
+            CoreGameSignals.Instance.onResetLevel += OnDisableInput;
+            CoreGameSignals.Instance.onLevelSuccessful += OnDisableInput;
         }
         
         private void UnsubscribeEvents()
-        {  
-            CoreGameSignals.Instance.onPlay -= OnEnableInput;
+        {
             InputSignals.Instance.onEnableInput -= OnEnableInput;
             InputSignals.Instance.onDisableInput -= OnDisableInput;
+            CoreGameSignals.Instance.onPlay -= OnEnableInput;
+            CoreGameSignals.Instance.onNextLevel -= OnEnableInput;
+            CoreGameSignals.Instance.onLevelFailed -= OnDisableInput;
+            CoreGameSignals.Instance.onResetLevel -= OnDisableInput;
+            CoreGameSignals.Instance.onLevelSuccessful -= OnDisableInput;
         }
         private void OnDisable() => UnsubscribeEvents();
         

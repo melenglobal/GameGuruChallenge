@@ -84,6 +84,7 @@ namespace Case2Folders.Scripts.Managers
         }
         private void OnPlatformStop()
         {
+            if (!currentPlatform.CanCut) return;
             var fallingBlock = GetFallingBlockFromPool();
             currentPlatform.StopPlatform(fallingBlock);
             _CanSpawnPlatform = CoreGameSignals.Instance.onCheckCanSpawnPlatform.Invoke(currentPlatform.transform);

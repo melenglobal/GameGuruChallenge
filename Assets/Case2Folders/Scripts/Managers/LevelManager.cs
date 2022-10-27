@@ -1,4 +1,5 @@
-﻿using Case2Folders.Scripts.Commands;
+﻿using System;
+using Case2Folders.Scripts.Commands;
 using Case2Folders.Scripts.Data.UnityObjects;
 using Case2Folders.Scripts.Data.ValueObjects;
 using Case2Folders.Scripts.Interfaces;
@@ -95,7 +96,7 @@ namespace Case2Folders.Scripts.Managers
         {
             _levelID++;
             UISignals.Instance.onSetLevelText?.Invoke(_levelID +1);
-            var obj =Instantiate(finishLineObject,CalculateFinishLineObjectPosition(_levelID),Quaternion.identity);
+            var obj = Instantiate(finishLineObject,CalculateFinishLineObjectPosition(_levelID),Quaternion.identity);
         }
         
         private void OnLevelSuccess() => currentFinishLinePosition = nextFinishLinePosition;
@@ -104,9 +105,9 @@ namespace Case2Folders.Scripts.Managers
         
         private Vector3 OnSetCurrentPlatformPosition()
         {
-            if (_levelID == 0) return Vector3.zero;
+            if (_levelID == 0) return new Vector3(0,.5f,-1.3f);;
             
-            return new Vector3(0,0,_offsetZ);
+            return currentFinishLinePosition;
         }
 
         private Vector3 OnSetLevelPlatformSpawnPosition()  
@@ -144,9 +145,20 @@ namespace Case2Folders.Scripts.Managers
           var obj=  Instantiate(finishLineObject,CalculateFinishLineObjectPosition(_levelID),Quaternion.identity);
           currentFinishLinePosition = obj.transform.position;
           UISignals.Instance.onSetLevelText?.Invoke(_levelID + 1);
+          CoreGameSignals.Instance.onSetCameraTarget?.Invoke();
         }
         private void OnClearActiveLevel() => _levelClearerCommand.Execute();
         public void Save(int uniqueId) => SaveLoadSignals.Instance.onSaveData?.Invoke(_levelData,_levelID);
         public void Load(int uniqueId) => SaveLoadSignals.Instance.onLoadData?.Invoke(_levelData.GetKey(),_levelID);
+
+        private void OnApplicationPause(bool pauseStatus)
+        {
+            Save(_levelID);
+        }
+
+        private void OnApplicationQuit()
+        {
+            Save(_levelID);
+        }
     }
 }

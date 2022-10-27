@@ -56,6 +56,7 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onNextLevel += OnNextLevel;
             CoreGameSignals.Instance.onPlay += OnStartSpawnPlatform;
             CoreGameSignals.Instance.onResetLevel += OnReset;
+            CoreGameSignals.Instance.onGetFallingBlock += OnGetFallingBlockFromPool;
         }
         private void UnsubscribeEvents()
         {
@@ -64,6 +65,7 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
             CoreGameSignals.Instance.onPlay -= OnStartSpawnPlatform;
             CoreGameSignals.Instance.onResetLevel -= OnReset;
+            CoreGameSignals.Instance.onGetFallingBlock += OnGetFallingBlockFromPool;
         }
         private void OnDisable() => UnsubscribeEvents();
         
@@ -85,8 +87,7 @@ namespace Case2Folders.Scripts.Managers
         private void OnPlatformStop()
         {
             if (!currentPlatform.CanCut) return;
-            var fallingBlock = GetFallingBlockFromPool();
-            currentPlatform.StopPlatform(fallingBlock);
+            currentPlatform.StopPlatform();
             _CanSpawnPlatform = CoreGameSignals.Instance.onCheckCanSpawnPlatform.Invoke(currentPlatform.transform);
             if (_CanSpawnPlatform)
             {
@@ -131,10 +132,11 @@ namespace Case2Folders.Scripts.Managers
             _pooledObjects.Add(newPlatform);
             return newPlatform.transform;
         }
-        private GameObject GetFallingBlockFromPool()
+        private GameObject OnGetFallingBlockFromPool(Vector3 edgePosition)
         {
             PoolObject newFallingBlock = _fallingBlockObjectPool.Pull();
-            return newFallingBlock.gameObject;
+            newFallingBlock.transform.position = edgePosition;
+            return _pooledObjects.Count < 1 ? null : newFallingBlock.gameObject;
         }
         private void ChangeSpawnPositionX()
         {
@@ -165,9 +167,11 @@ namespace Case2Folders.Scripts.Managers
         {
             _CanSpawnPlatform = false;
             ResetPlatforms();
+            currentPlatform = null;
+            lastPlatform = null;
             transform.position = CoreGameSignals.Instance.onGetSpawnPosition.Invoke();
             GetInitPlatformFromPool();
-            DOVirtual.DelayedCall(.5f, SpawnPlatform);
+            //DOVirtual.DelayedCall(.5f, SpawnPlatform);
         }
         private void ResetPlatforms()
         {   

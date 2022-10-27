@@ -9,14 +9,9 @@ namespace Case2Folders.Scripts.Managers
     {
         #region Self Variables
 
-        #region Serialized Variables
-
-        [SerializeField] 
-        private bool isReadyForTouch;
-
-        #endregion
-        
         #region Private Variables
+        
+        private bool _isReadyForTouch;
         
         private bool _hasTouched;
         
@@ -54,7 +49,7 @@ namespace Case2Folders.Scripts.Managers
         
         private void Update()
         {
-            if (!isReadyForTouch) return;
+            if (!_isReadyForTouch) return;
 
             if (Input.GetMouseButton(0) && !_hasTouched)
             {
@@ -66,8 +61,8 @@ namespace Case2Folders.Scripts.Managers
             }
         }
 
-        private void OnEnableInput() =>  isReadyForTouch = true;
-        private void OnDisableInput() => isReadyForTouch = false;
+        private void OnEnableInput() =>  _isReadyForTouch = true;
+        private void OnDisableInput() => _isReadyForTouch = false;
         private bool IsPointerOverUIElement()
         {
             var eventData = new PointerEventData(EventSystem.current);

@@ -20,7 +20,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1095395301152404909
 Transform:
   m_ObjectHideFlags: 0
@@ -109,6 +109,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1d8c2cf76d5454fb3de6db9ad02b321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentMovementController: {fileID: 0}
+  LastMovementController: {fileID: 0}
   meshRenderer: {fileID: 1095395301152404911}
   materials:
   - {fileID: 2100000, guid: d1e7205df0c8b0142bf4385f4199ab2c, type: 2}
@@ -132,10 +134,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 0304769e0c8dd25459a3cf2f6b542a59, type: 2}
   - {fileID: 2100000, guid: d0ca2cd4145ff9c4282021e14702f4af, type: 2}
   - {fileID: 2100000, guid: 5b25cd95e3901d24f89b00fa0a88cf4c, type: 2}
-  fallingBlock: {fileID: 0}
-  CurrentMovementController: {fileID: 0}
-  LastMovementController: {fileID: 0}
-  MoveDirectionType: 1
 --- !u!114 &4251775395786628971
 MonoBehaviour:
   m_ObjectHideFlags: 0

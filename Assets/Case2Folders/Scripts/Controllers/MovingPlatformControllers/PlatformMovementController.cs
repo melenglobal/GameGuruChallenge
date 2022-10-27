@@ -40,7 +40,7 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
         #endregion
         
         private void OnEnable()
-        {   
+        {
             _canCut = true;
            SetMovementController();
            
@@ -53,7 +53,9 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
             if (LastMovementController == null || LastMovementController == this)
             {
                 LastMovementController = this;
+                _canCut = false;
             }
+            
             CurrentMovementController = this;
 
             _materialColor = GetRandomColor();
@@ -66,26 +68,35 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
         
         private Color GetRandomColor() => materials[Random.Range(0, materials.Length)].color;
         
-        public void StopPlatform(GameObject fallingBlock)
+        public void StopPlatform()
         {
             if (!_canCut) return;
             _canCut = false;
             _moveSpeed = 0;
             DOTween.KillAll();
             float stoppingDistanceX = transform.position.x - LastMovementController.transform.position.x;
-
+            if (LastMovementController == this)
+            {
+                return;
+            }
             if (Mathf.Abs(stoppingDistanceX) >= LastMovementController.transform.localScale.x)
             {
                 LastMovementController = null;
-                CurrentMovementController = null; 
+                CurrentMovementController = null;
+                _canCut = false;
+                return;
             }
+            
+            CoreGameSignals.Instance.onPlatformStop.Invoke(transform);
+
             float edgeDirection = stoppingDistanceX > 0 ? 1f : -1f;
-            CutPlatformAlongXAxis(fallingBlock,stoppingDistanceX,edgeDirection);
+            
+            CutPlatformAlongXAxis(stoppingDistanceX,edgeDirection);
 
         }
         
 
-        private void CutPlatformAlongXAxis(GameObject fallingBlock,float stoppingDistanceX,float edgeDirection)
+        private void CutPlatformAlongXAxis(float stoppingDistanceX,float edgeDirection)
         {
             float newXSize = LastMovementController.transform.localScale.x - Mathf.Abs(stoppingDistanceX);
 
@@ -106,12 +117,14 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
 
             float fallingBlockXPosition = platformEdge + (fallingBlockSize / 2f * edgeDirection);
             
-            SpawnFallingCube(fallingBlock,fallingBlockXPosition,fallingBlockSize);
+            SpawnFallingCube(fallingBlockXPosition,fallingBlockSize);
 
         }
 
-        private void SpawnFallingCube(GameObject fallingBlock,float fallingBlockXPosition,float fallingBlockSize)
-        {
+        private void SpawnFallingCube(float fallingBlockXPosition,float fallingBlockSize)
+        {   
+            var fallingBlock = CoreGameSignals.Instance.onGetFallingBlock?.Invoke(transform.position);
+            if (fallingBlock == null) return;
             fallingBlock.SetActive(true);
             var currentTransform = transform;
             var localScale = currentTransform.localScale;

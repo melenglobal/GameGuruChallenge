@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8145396129249989854}
   - component: {fileID: 7539525047515068331}
+  - component: {fileID: 3663459539089188495}
   m_Layer: 0
   m_Name: Physics
   m_TagString: Finish
@@ -44,6 +45,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1.6610019, z: 0.27462995}
   m_Center: {x: 0, y: 0.33050108, z: -0.0012717545}
+--- !u!114 &3663459539089188495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6747648178513356396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe8847df2e1042eb9bfe71e0bb8f7b3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _collider: {fileID: 7539525047515068331}
 --- !u!1 &8043635215795570541
 GameObject:
   m_ObjectHideFlags: 0

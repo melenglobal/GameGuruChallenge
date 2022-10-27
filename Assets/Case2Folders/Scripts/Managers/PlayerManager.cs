@@ -1,5 +1,4 @@
-﻿using System;
-using Case2Folders.Scripts.Controllers.PlayerControllers;
+﻿using Case2Folders.Scripts.Controllers.PlayerControllers;
 using Case2Folders.Scripts.Data.UnityObjects;
 using Case2Folders.Scripts.Data.ValueObjects;
 using Case2Folders.Scripts.Enums;
@@ -16,6 +15,8 @@ namespace Case2Folders.Scripts.Managers
 
         private PlayerAnimationCommand _playerAnimationCommand;
         
+        private PlayerMeshCommand _playerMeshCommand;
+        
         private CharacterData _characterData;
         
         #endregion
@@ -26,6 +27,9 @@ namespace Case2Folders.Scripts.Managers
         
         [SerializeField] 
         private Animator playerAnimator;
+        
+        [SerializeField]
+        private SkinnedMeshRenderer playerMeshRenderer;
 
         #endregion
 
@@ -40,7 +44,11 @@ namespace Case2Folders.Scripts.Managers
         private void Init()
         {
             _playerAnimationCommand = new PlayerAnimationCommand(playerAnimator);
+
+            _playerMeshCommand = new PlayerMeshCommand(playerMeshRenderer);
             
+            _playerMeshCommand.SetMeshVisible(true);
+                
             _playerAnimationCommand.ChangeAnimationState(PlayerAnimationType.Idle);
             
             _characterData = GetCharacterData();
@@ -60,6 +68,7 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onResetLevel += OnReturnBase;
             CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccessful;
             CoreGameSignals.Instance.onNextLevel += OnNextLevel;
+            CoreGameSignals.Instance.onPlatformStop += OnPlatformStop;
         }
         
         private void UnsubscribeEvents()
@@ -70,7 +79,9 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onResetLevel -= OnReturnBase;
             CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccessful;
             CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
+            CoreGameSignals.Instance.onPlatformStop -= OnPlatformStop;
         }
+
         private void OnDisable() => UnsubscribeEvents();
 
         #endregion
@@ -78,8 +89,6 @@ namespace Case2Folders.Scripts.Managers
         private void OnPlay() => ChangePlayerBehaviour(true, PlayerAnimationType.Run);
         private void OnLevelFailed() => ChangePlayerBehaviour(false, PlayerAnimationType.Fall);
         private void OnResetLevel() => ChangePlayerBehaviour(false, PlayerAnimationType.Idle);
-        private void OnReturnBase() =>
-            transform.position = CoreGameSignals.Instance.onGetCurrentPlatformPosition.Invoke();
         private void OnLevelSuccessful() => ChangePlayerBehaviour(false, PlayerAnimationType.Dance);
         private void OnNextLevel() => ChangePlayerBehaviour(true, PlayerAnimationType.Run);
         private void ChangePlayerBehaviour(bool isReadyToMove, PlayerAnimationType playerAnimationType)
@@ -87,5 +96,8 @@ namespace Case2Folders.Scripts.Managers
             _playerAnimationCommand.ChangeAnimationState(playerAnimationType);
             playerMovementController.ReadyToMove(isReadyToMove);
         }
+        private void OnPlatformStop(Transform lastPlatform) => playerMovementController.SetLastPlatformTransform(lastPlatform);
+        private void OnReturnBase() =>
+            transform.position = CoreGameSignals.Instance.onGetCurrentPlatformPosition.Invoke();
     }
 }

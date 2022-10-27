@@ -12,5 +12,7 @@ namespace Case2Folders.Scripts.Data.ValueObjects
     public struct CharacterMovementData
     {
         public float ForwardSpeed;
+        public float LerpSpeed;
+        public float RotationSpeed;
     }
 }

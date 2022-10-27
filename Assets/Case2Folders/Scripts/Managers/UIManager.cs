@@ -2,6 +2,7 @@
 using Case2Folders.Scripts.Controllers;
 using Case2Folders.Scripts.Enums;
 using Case2Folders.Scripts.Signals;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -56,7 +57,7 @@ namespace Case2Folders.Scripts.Managers
 
         private void OnDisable() => UnsubscribeEvents();
 
-        public void Play() => CoreGameSignals.Instance.onPlay?.Invoke();
+        public void Play() => DOVirtual.DelayedCall(0.025f,()=>CoreGameSignals.Instance.onPlay?.Invoke());
 
         public void NextLevel() => CoreGameSignals.Instance.onNextLevel?.Invoke();
         
@@ -81,9 +82,12 @@ namespace Case2Folders.Scripts.Managers
         }
         
         private void OnLevelFailed()
-        {
-            UISignals.Instance.onClosePanel?.Invoke(UIPanels.LevelPanel);
-            UISignals.Instance.onOpenPanel?.Invoke(UIPanels.FailPanel);
+        {   
+            DOVirtual.DelayedCall(2f, () =>
+            {
+                UISignals.Instance.onClosePanel?.Invoke(UIPanels.LevelPanel);
+                UISignals.Instance.onOpenPanel?.Invoke(UIPanels.FailPanel);
+            });
         }
         
         private void OnResetLevel()

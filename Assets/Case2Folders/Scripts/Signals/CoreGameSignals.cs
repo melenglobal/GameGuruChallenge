@@ -38,5 +38,9 @@ namespace Case2Folders.Scripts.Signals
         public Func<Transform,bool> onCheckCanSpawnPlatform = transform => default;
         
         public Func<Vector3> onGetCurrentPlatformPosition = () => default;
+        
+        public Func<Vector3,GameObject> onGetFallingBlock = vector3 => default;
+        
+        public UnityAction<Transform> onPlatformStop = delegate {  };
     }
 }

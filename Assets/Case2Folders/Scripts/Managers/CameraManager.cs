@@ -45,6 +45,7 @@ namespace Case2Folders.Scripts.Managers
 
         private void SubscribeEvents()
         {
+            CoreGameSignals.Instance.onSetCameraTarget += OnSetCameraTarget;
             CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccessful;
             CoreGameSignals.Instance.onLevelFailed += OnLevelFailed;
             CoreGameSignals.Instance.onResetLevel += OnResetLevel;
@@ -53,7 +54,8 @@ namespace Case2Folders.Scripts.Managers
 
 
         private void UnsubscribeEvents()
-        {
+        {   
+            CoreGameSignals.Instance.onSetCameraTarget -= OnSetCameraTarget;
             CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccessful;
             CoreGameSignals.Instance.onLevelFailed -= OnLevelFailed;
             CoreGameSignals.Instance.onResetLevel -= OnResetLevel;
@@ -61,10 +63,17 @@ namespace Case2Folders.Scripts.Managers
         }
         private void OnDisable() =>  UnsubscribeEvents();
         
+        private void OnSetCameraTarget()
+        {   
+            Debug.Log("OnSetCameraTarget");
+            stateDrivenCamera.LookAt = null;
+            stateDrivenCamera.Follow = _playerTransform;
+            ChangeCamera(CameraTypes.Level);
+        }
         private void OnResetLevel()
         {
             stateDrivenCamera.Follow = _playerTransform;
-            stateDrivenCamera.LookAt = _playerTransform;
+            stateDrivenCamera.LookAt = null;
         }
 
         private void OnLevelFailed()
@@ -78,7 +87,8 @@ namespace Case2Folders.Scripts.Managers
             ResetCameraRotation();
         }
         private void OnLevelSuccessful()
-        {
+        {   
+            stateDrivenCamera.LookAt = _playerTransform;
             _isLevelSuccess = true;
             _orbitalTransposer.m_XAxis.m_InputAxisName = "";
             ChangeCamera(CameraTypes.Finish);

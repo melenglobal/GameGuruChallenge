@@ -15,7 +15,9 @@ namespace Case2Folders.Scripts.Managers
 
         #region Private Variables
 
-        private static ObjectPool<PoolObject> _objectPool;
+        private static ObjectPool<PoolObject> _platformObjectPool;
+        
+        private static ObjectPool<PoolObject> _fallingBlockObjectPool;
 
         private static readonly List<PoolObject> _pooledObjects = new List<PoolObject>();
 
@@ -27,6 +29,8 @@ namespace Case2Folders.Scripts.Managers
         [SerializeField] 
         private GameObject movingPlatformPrefab;
         [SerializeField]
+        private GameObject fallingBlockPrefab;
+        [SerializeField]
         private PlatformMovementController currentPlatform;
         [SerializeField] 
         private PlatformMovementController lastPlatform;
@@ -37,7 +41,11 @@ namespace Case2Folders.Scripts.Managers
 
         #endregion
 
-        private void Awake() => _objectPool = new ObjectPool<PoolObject>(movingPlatformPrefab, 10);
+        private void Awake()
+        {
+            _platformObjectPool = new ObjectPool<PoolObject>(movingPlatformPrefab, 20);
+            _fallingBlockObjectPool = new ObjectPool<PoolObject>(fallingBlockPrefab, 5);
+        }
 
         #region Event Subscriptions
         private void OnEnable() => SubscribeEvents();
@@ -47,6 +55,7 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onCurrentPlatformChange += OnPlatformChange;
             CoreGameSignals.Instance.onNextLevel += OnNextLevel;
             CoreGameSignals.Instance.onPlay += OnStartSpawnPlatform;
+            CoreGameSignals.Instance.onResetLevel += OnReset;
         }
         private void UnsubscribeEvents()
         {
@@ -54,6 +63,7 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onCurrentPlatformChange -= OnPlatformChange;
             CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
             CoreGameSignals.Instance.onPlay -= OnStartSpawnPlatform;
+            CoreGameSignals.Instance.onResetLevel -= OnReset;
         }
         private void OnDisable() => UnsubscribeEvents();
         
@@ -74,7 +84,8 @@ namespace Case2Folders.Scripts.Managers
         }
         private void OnPlatformStop()
         {
-            currentPlatform.StopPlatform();
+            var fallingBlock = GetFallingBlockFromPool();
+            currentPlatform.StopPlatform(fallingBlock);
             _CanSpawnPlatform = CoreGameSignals.Instance.onCheckCanSpawnPlatform.Invoke(currentPlatform.transform);
             if (_CanSpawnPlatform)
             {
@@ -101,7 +112,6 @@ namespace Case2Folders.Scripts.Managers
         private void GetInitPlatformFromPool()
         {
             GetPlatformFromPool().position = transform.position;
-            Debug.Log("GetInitPlatformFromPool");
             ChangeSpawnPositionX();
         }
         private void SpawnPlatform()
@@ -116,9 +126,14 @@ namespace Case2Folders.Scripts.Managers
 
         private Transform GetPlatformFromPool()
         {
-            PoolObject newPlatform = _objectPool.Pull();
+            PoolObject newPlatform = _platformObjectPool.Pull();
             _pooledObjects.Add(newPlatform);
             return newPlatform.transform;
+        }
+        private GameObject GetFallingBlockFromPool()
+        {
+            PoolObject newFallingBlock = _fallingBlockObjectPool.Pull();
+            return newFallingBlock.gameObject;
         }
         private void ChangeSpawnPositionX()
         {
@@ -146,16 +161,19 @@ namespace Case2Folders.Scripts.Managers
             }
         }
         private void OnReset()
-        {   
+        {
+            _CanSpawnPlatform = false;
             ResetPlatforms();
             transform.position = CoreGameSignals.Instance.onGetSpawnPosition.Invoke();
             GetInitPlatformFromPool();
             DOVirtual.DelayedCall(.5f, SpawnPlatform);
         }
         private void ResetPlatforms()
-        {
+        {   
+            
             foreach (var pooledObject in _pooledObjects)
             {
+                pooledObject.gameObject.transform.localScale = new Vector3(3, 1, 3);
                 pooledObject.gameObject.SetActive(false);
             }
             _pooledObjects.Clear();

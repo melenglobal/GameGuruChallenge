@@ -75,8 +75,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25e60018c3f54fe1abb9f3f7e97b2eb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movingPlatforms: []
   movingPlatformPrefab: {fileID: 1095395301152404905, guid: 6544bff0456a5764ab34b3985966856e, type: 3}
+  fallingBlockPrefab: {fileID: 417124402292959829, guid: 169b0614953051e4e93a97dbc5363913, type: 3}
   currentPlatform: {fileID: 0}
   lastPlatform: {fileID: 0}
   platformMoveDirectionType: 0

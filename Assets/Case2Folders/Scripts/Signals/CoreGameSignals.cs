@@ -36,5 +36,7 @@ namespace Case2Folders.Scripts.Signals
         public UnityAction onPerfectClick = delegate {  };
         
         public Func<Transform,bool> onCheckCanSpawnPlatform = transform => default;
+        
+        public Func<Vector3> onGetCurrentPlatformPosition = () => default;
     }
 }

@@ -12,15 +12,15 @@ namespace Case2Folders.Scripts.Managers
         #region Self Variables
 
         #region Private Variables
-
-        private Transform _playerTransform;
-
         
         private CinemachineOrbitalTransposer _orbitalTransposer;
 
         #endregion
         #region Serialized Variables
-
+        
+        [SerializeField]
+        private Transform _playerTransform;
+        
         [SerializeField] 
         private CinemachineStateDrivenCamera stateDrivenCamera;
         
@@ -46,6 +46,8 @@ namespace Case2Folders.Scripts.Managers
         private void SubscribeEvents()
         {
             CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccessful;
+            CoreGameSignals.Instance.onLevelFailed += OnLevelFailed;
+            CoreGameSignals.Instance.onResetLevel += OnResetLevel;
             CoreGameSignals.Instance.onNextLevel += OnNextLevel;
         }
 
@@ -53,19 +55,21 @@ namespace Case2Folders.Scripts.Managers
         private void UnsubscribeEvents()
         {
             CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccessful;
+            CoreGameSignals.Instance.onLevelFailed -= OnLevelFailed;
+            CoreGameSignals.Instance.onResetLevel -= OnResetLevel;
             CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
         }
         private void OnDisable() =>  UnsubscribeEvents();
         
-        private void OnPlayerInitialize(Transform playerTransform)
+        private void OnResetLevel()
         {
-            _playerTransform = playerTransform;
             stateDrivenCamera.Follow = _playerTransform;
+            stateDrivenCamera.LookAt = _playerTransform;
         }
 
-        private void OnSetCameraTarget()
+        private void OnLevelFailed()
         {
-            
+            DOVirtual.DelayedCall(2f,()=> stateDrivenCamera.Follow = null);
         }
         private void OnNextLevel()
         {

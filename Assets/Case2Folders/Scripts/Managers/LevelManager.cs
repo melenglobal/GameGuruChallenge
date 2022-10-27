@@ -69,9 +69,9 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onClearActiveLevel += OnClearActiveLevel;
             CoreGameSignals.Instance.onNextLevel += OnNextLevel;
             CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccess;
-            CoreGameSignals.Instance.onResetLevel += OnResetLevel;
             CoreGameSignals.Instance.onGetSpawnPosition += OnSetLevelPlatformSpawnPosition;
             CoreGameSignals.Instance.onCheckCanSpawnPlatform += OnPlatformCanSpawn;
+            CoreGameSignals.Instance.onGetCurrentPlatformPosition += OnSetCurrentPlatformPosition;
         }
         
         private void UnsubscribeEvents()
@@ -80,9 +80,9 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onClearActiveLevel -= OnClearActiveLevel;
             CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
             CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccess;
-            CoreGameSignals.Instance.onResetLevel -= OnResetLevel;
             CoreGameSignals.Instance.onGetSpawnPosition -= OnSetLevelPlatformSpawnPosition;
             CoreGameSignals.Instance.onCheckCanSpawnPlatform -= OnPlatformCanSpawn;
+            CoreGameSignals.Instance.onGetCurrentPlatformPosition += OnSetCurrentPlatformPosition;
         }
 
         private void OnDisable() => UnsubscribeEvents();
@@ -97,14 +97,18 @@ namespace Case2Folders.Scripts.Managers
             UISignals.Instance.onSetLevelText?.Invoke(_levelID +1);
             var obj =Instantiate(finishLineObject,CalculateFinishLineObjectPosition(_levelID),Quaternion.identity);
         }
-            
-        private void OnResetLevel()
-        {
-            
-        }
+        
         private void OnLevelSuccess() => currentFinishLinePosition = nextFinishLinePosition;
         
         private bool OnPlatformCanSpawn(Transform lastPlatform) => lastPlatform.position.z < _FinishLinePositionZ - _levelData.Levels[_levelID].PlatformZScale;
+        
+        private Vector3 OnSetCurrentPlatformPosition()
+        {
+            if (_levelID == 0) return Vector3.zero;
+            
+            return new Vector3(0,0,_offsetZ);
+        }
+
         private Vector3 OnSetLevelPlatformSpawnPosition()  
         {
             if (_levelID <= 0)

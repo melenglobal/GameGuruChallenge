@@ -57,6 +57,7 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onPlay += OnPlay;
             CoreGameSignals.Instance.onLevelFailed += OnLevelFailed;
             CoreGameSignals.Instance.onResetLevel += OnResetLevel;
+            CoreGameSignals.Instance.onResetLevel += OnReturnBase;
             CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccessful;
             CoreGameSignals.Instance.onNextLevel += OnNextLevel;
         }
@@ -66,6 +67,7 @@ namespace Case2Folders.Scripts.Managers
             CoreGameSignals.Instance.onPlay -= OnPlay;
             CoreGameSignals.Instance.onLevelFailed -= OnLevelFailed;
             CoreGameSignals.Instance.onResetLevel -= OnResetLevel;
+            CoreGameSignals.Instance.onResetLevel -= OnReturnBase;
             CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccessful;
             CoreGameSignals.Instance.onNextLevel -= OnNextLevel;
         }
@@ -76,6 +78,8 @@ namespace Case2Folders.Scripts.Managers
         private void OnPlay() => ChangePlayerBehaviour(true, PlayerAnimationType.Run);
         private void OnLevelFailed() => ChangePlayerBehaviour(false, PlayerAnimationType.Fall);
         private void OnResetLevel() => ChangePlayerBehaviour(false, PlayerAnimationType.Idle);
+        private void OnReturnBase() =>
+            transform.position = CoreGameSignals.Instance.onGetCurrentPlatformPosition.Invoke();
         private void OnLevelSuccessful() => ChangePlayerBehaviour(false, PlayerAnimationType.Dance);
         private void OnNextLevel() => ChangePlayerBehaviour(true, PlayerAnimationType.Run);
         private void ChangePlayerBehaviour(bool isReadyToMove, PlayerAnimationType playerAnimationType)

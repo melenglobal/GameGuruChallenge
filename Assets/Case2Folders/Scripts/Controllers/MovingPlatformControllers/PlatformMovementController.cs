@@ -1,27 +1,40 @@
-﻿using Case2Folders.Scripts.Enums;
+﻿using System;
 using Case2Folders.Scripts.Signals;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
 {
     public class PlatformMovementController : MonoBehaviour
-    {   
+    {
+        #region Self Variables
+
+        #region Public Variables
         
-        private float _moveSpeed = 2f;
-
-        [SerializeField] 
-        private Material material;
-
-        [SerializeField] 
-        private GameObject fallingBlock;
-
         public PlatformMovementController CurrentMovementController;
         
         public PlatformMovementController LastMovementController;
+
+        #endregion
+
+        #region Private Variables
         
-        public PlatformMoveDirectionType MoveDirectionType;
-        
+        private Color _materialColor;
+        private float _moveSpeed = 2f;
+
+        #endregion
+
+        #region Serialized Variables
+
+        [SerializeField] 
+        private MeshRenderer meshRenderer;
+        [SerializeField] 
+        private Material[] materials;
+
+        #endregion
+
+        #endregion
         
         private void OnEnable()
         {
@@ -38,18 +51,17 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
             }
             CurrentMovementController = this;
 
-            GetComponent<Renderer>().material.color = GetRandomColor();
+            _materialColor = GetRandomColor();
+            meshRenderer.material.color = _materialColor;
 
-            transform.localScale = new Vector3(LastMovementController.transform.localScale.x,transform.localScale.y,transform.localScale.z);
+            var localScale = transform.localScale;
+            localScale = new Vector3(LastMovementController.transform.localScale.x,localScale.y,localScale.z);
+            transform.localScale = localScale;
         }
         
-        private Color GetRandomColor() // Create color list and get random color from list
-        {
-            return new Color(UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f),
-                UnityEngine.Random.Range(0, 1f));
-        }
+        private Color GetRandomColor() => materials[Random.Range(0, materials.Length)].color;
         
-        public void StopPlatform()
+        public void StopPlatform(GameObject fallingBlock)
         {
             _moveSpeed = 0;
             DOTween.KillAll();
@@ -61,11 +73,11 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
                 CurrentMovementController = null; 
             }
             float edgeDirection = stoppingDistanceX > 0 ? 1f : -1f;
-            CutPlatformAlongXAxis(stoppingDistanceX,edgeDirection);                                                      
+            CutPlatformAlongXAxis(fallingBlock,stoppingDistanceX,edgeDirection);                                                      
         }
         
 
-        private void CutPlatformAlongXAxis(float stoppingDistanceX,float edgeDirection)
+        private void CutPlatformAlongXAxis(GameObject fallingBlock,float stoppingDistanceX,float edgeDirection)
         {
             float newXSize = LastMovementController.transform.localScale.x - Mathf.Abs(stoppingDistanceX);
 
@@ -86,14 +98,13 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
 
             float fallingBlockXPosition = platformEdge + (fallingBlockSize / 2f * edgeDirection);
             
-            SpawnFallingCube(fallingBlockXPosition,fallingBlockSize);
+            SpawnFallingCube(fallingBlock,fallingBlockXPosition,fallingBlockSize);
 
         }
 
-        private void SpawnFallingCube(float fallingBlockXPosition,float fallingBlockSize)
+        private void SpawnFallingCube(GameObject fallingBlock,float fallingBlockXPosition,float fallingBlockSize)
         {
-            var fallingBlock = GameObject.CreatePrimitive(PrimitiveType.Cube); // Do not create cube,use pool for that
-
+            fallingBlock.SetActive(true);
             var currentTransform = transform;
             var localScale = currentTransform.localScale;
             fallingBlock.transform.localScale = 
@@ -102,12 +113,13 @@ namespace Case2Folders.Scripts.Controllers.MovingPlatformControllers
             var transformPosition = currentTransform.position;
             fallingBlock.transform.position =
                 new Vector3(fallingBlockXPosition, transformPosition.y, transformPosition.z);
-
-            fallingBlock.AddComponent<Rigidbody>(); // Do not add rigidbody,use pool for that
-            // Create Pool
-            fallingBlock.GetComponent<Renderer>().material.color = GetComponent<Renderer>().material.color; //it's very bad way to handle.
             
-            Destroy(fallingBlock.gameObject,1f); //Release object to pool
+            fallingBlock.GetComponent<Renderer>().material.color = _materialColor;
+
+            DOVirtual.DelayedCall(3f, () =>
+            {
+                fallingBlock.SetActive(false);
+            });
             
         }
     }

@@ -9,36 +9,29 @@ namespace Case2Folders.Scripts.Controllers.PlayerControllers
     {
         #region Self Variables
 
+        #region Public Variables
+        
+        public bool _isReadyToMove;
+        
+        #endregion
         #region Private Variables
 
         private CharacterMovementData _movementData;
-
         private Transform playerTransform;
-
-        public bool _isReadyToMove;
-
         private bool _isBegginToWalkPlatform;
-
         private bool _isRotateToPlatform;
         private bool _isPlayerFalling => transform.position.y < 0f;
-        
         private float _currentXAxisValue;
-
         private float _platformZScale = 1.5f;
         
-        
-
         #endregion
 
         #region Serialized Variables
 
         [SerializeField] 
         private new Rigidbody rigidbody;
-        
         [SerializeField]
         private Transform _lastMovingPlatformTransform;
-
-
         #endregion
 
         #endregion
@@ -73,15 +66,12 @@ namespace Case2Folders.Scripts.Controllers.PlayerControllers
             rigidbody.MovePosition(playerTransform.position +
                                    playerTransform.forward * (Time.fixedDeltaTime* _movementData.ForwardSpeed));
         }
-        
-
         public void SetLastPlatformTransform(Transform lastPlatformTransform)
         {
             _lastMovingPlatformTransform = lastPlatformTransform;
             _isBegginToWalkPlatform =true;
             _isRotateToPlatform = true;
         }
-        
         private void RotatePlayer()
         {
             if (_lastMovingPlatformTransform == null) return;
@@ -96,15 +86,17 @@ namespace Case2Folders.Scripts.Controllers.PlayerControllers
             {
                 Quaternion toRotation = Quaternion.LookRotation(Vector3.forward);
                 toRotation = quaternion.Euler(0,toRotation.eulerAngles.y, 0);
-                rigidbody.MoveRotation(Quaternion.Slerp(rigidbody.rotation, toRotation, 1f)); 
+                rigidbody.MoveRotation(Quaternion.Slerp(rigidbody.rotation, toRotation, .4f)); 
                 _isBegginToWalkPlatform = false;
+                
             }
             else
             {
+                _isRotateToPlatform = false;
                 Quaternion toRotation = Quaternion.LookRotation(rotateDirection);
                 toRotation = quaternion.Euler(0,toRotation.eulerAngles.y, 0);
                 rigidbody.MoveRotation(Quaternion.RotateTowards(rigidbody.rotation, toRotation,22.5f));
-                _isRotateToPlatform = false;
+                
             }
 
         }

@@ -16,4 +16,4 @@ MonoBehaviour:
     MovementData:
       ForwardSpeed: 1.3
       LerpSpeed: 1
-      RotationSpeed: 5
+      RotationSpeed: 1000

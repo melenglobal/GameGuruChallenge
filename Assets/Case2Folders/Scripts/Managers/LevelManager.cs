@@ -142,10 +142,6 @@ namespace Case2Folders.Scripts.Managers
         {
             if (_levelID == 0) return new Vector3(0,.5f,-1.3f);
             
-            Debug.Log(_levelID);
-            Debug.Log(currentFinishLinePosition);
-            Debug.Log(nextFinishLinePosition);
-            Debug.Log(spawnPosition);
             return currentFinishLinePosition;
         }
 

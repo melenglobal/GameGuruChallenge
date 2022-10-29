@@ -2,6 +2,7 @@
 {
     public enum GridState
     {
-        
+        Clicked,
+        UnClicked
     }
 }

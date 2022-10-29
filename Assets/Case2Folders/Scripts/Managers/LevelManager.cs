@@ -136,7 +136,7 @@ namespace Case2Folders.Scripts.Managers
         
         private void OnLevelSuccess() => currentFinishLinePosition = nextFinishLinePosition;
         
-        private bool OnPlatformCanSpawn(Transform lastPlatform) => lastPlatform.position.z < _FinishLinePositionZ - _levelData.Levels[_levelID].PlatformZScale;
+        private bool OnPlatformCanSpawn(Transform lastPlatform) => lastPlatform.position.z < nextFinishLinePosition.z - _levelData.Levels[_levelID].PlatformZScale;
         
         private Vector3 OnSetCurrentPlatformPosition() 
         {

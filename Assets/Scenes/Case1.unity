@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridPrefabs: []
-  gridSize: 3
+  gridSize: 10
   gridPrefab: {fileID: 3505595030243211111, guid: eb268161c4334bf449d8a9d8e47a84aa, type: 3}
   gridParent: {fileID: 232855882}
   mainCamera: {fileID: 1772136276}
